@@ -13,11 +13,13 @@
 
         ImplementationWithIntegerType instanceOfImplementationWithIntegerType = new();
 
+        // Calling generic method with different parameter types
         ClassWithGenericMethod instanceOfClassWithGenericMethod = new();
         instanceOfClassWithGenericMethod.GenericMethod("This is a string");
         instanceOfClassWithGenericMethod.GenericMethod(42);
         instanceOfClassWithGenericMethod.GenericMethod(3.14);
 
+        // Calling generic function with generic return type 
         int genericFunctionResult1 = instanceOfClassWithGenericMethod.GenericFunction(42);
         string genericFunctionResult2 = instanceOfClassWithGenericMethod.GenericFunction("This is a string");
         double genericFunctionResult3 = instanceOfClassWithGenericMethod.GenericFunction(3.14);
@@ -114,6 +116,9 @@
                 $"and the value is {value}");
         }
 
+        // Can specify a generic return type, but you have to keep it generic,
+        //  so can't return something like 123 or "value" as those are type specific
+        //  If you want to return something specific, you'd put that in the return type of the function
         public T GenericFunction<T>(T value)
         {
             Console.WriteLine(

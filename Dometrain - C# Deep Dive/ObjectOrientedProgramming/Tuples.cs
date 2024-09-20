@@ -1,4 +1,8 @@
-﻿//global using NicksColor = (byte R, byte G, byte B);
+﻿// Global usings introduced in C# 12
+//  See usage on line ~120
+global using NicksColor = (byte R, byte G, byte B);
+
+
 public class Tuples
 {
     public void RunExample()
@@ -21,6 +25,7 @@ public class Tuples
 
         // System.Tuple
         Tuple<int, string> tuple = new Tuple<int, string>(1, "one");
+        Tuple<int, string> tuple2 = new (1, "one");
 
         // System.ValueTuple
         ValueTuple<int, string> valueTuple = new ValueTuple<int, string>(1, "one");
@@ -132,24 +137,28 @@ public class Tuples
             }
 
             return (Min: min, Max: max);
-            //return (min, max); // this also works
+            //return (min, max); // this also works as the names are declared in the method signature
         }
 
         Console.WriteLine("Min and Max with named tuple:");
         var minAndMaxNamedTuple = GetMinAndMaxWithNamedTuple(numbers);
-        Console.WriteLine($"Min: {minAndMaxNamedTuple.Min}, Max: {minAndMaxNamedTuple.Max}");
-        Console.WriteLine($"The whole tuple: {minAndMaxNamedTuple}");
+        Console.WriteLine($"Min: {minAndMaxNamedTuple.Min}, Max: {minAndMaxNamedTuple.Max}"); // Easier to understand access of values in Tuple
+        Console.WriteLine($"The whole tuple: {minAndMaxNamedTuple}"); // Still won't show the names of the values
 
         // we can also "deconstruct" tuples
         (int firstThing, string secondThing) = (1, "this is the second thing!");
-        //(int minVal, _) = GetMinAndMaxWithNamedTuple(numbers);
+        // This will assign the returns direclty into the declared variables in the brackets
+
+        // Can ignore some Tuple values using _
+        (int minVal, _) = GetMinAndMaxWithNamedTuple(numbers);
 
         // we can put the keyword var out the front
         // this way to infer the type at compile time
         var (firstThing2, secondThing2) = (1, "this is the second thing!");
 
         // C# 12 introduced global usings, and we can alias tuples this way!
-        //NicksColor color = (R: 255, G: 0, B: 0);
+        NicksColor color = (R: 255, G: 0, B: 0);
+        var nicksRed = color.R;
 
         // Remember that whole thing about equality challenges from
         // earlier in this course?
