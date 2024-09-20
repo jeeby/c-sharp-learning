@@ -7,6 +7,8 @@
         // that operate on IEnumerable<T>
         // They're all... extension methods!
 
+        #region LINQ Methods Overview
+
         // LINQ can help us
         // - map: transform each item
         // - filter: only take some items
@@ -37,7 +39,7 @@
         }
 
         // using LINQ we could do...
-        var evenNumbers2 = evenNumbers
+        var evenNumbers2 = numbers
             .Where(number => number % 2 == 0)
             .ToList();
 
@@ -47,24 +49,27 @@
         {
             sum += number;
         }
-
         double average = sum / (double)numbers.Count;
 
         // We can use Average() from LINQ:
         var averageByLinq = numbers.Average();
-                
+
         // there are MANY more LINQ methods...
         // and we can chain them together to build
         // more complex pipelines!
-        List<string> biggerListOfRawNumbers = [ "0", "9", "1", "8", "2", "7", "3", "6", "4", "5"];
+        List<string> biggerListOfRawNumbers = ["0", "9", "1", "8", "2", "7", "3", "6", "4", "5"];
         var magicNumber = biggerListOfRawNumbers
-            .Select(int.Parse) // converts everything to integers
-            .OrderByDescending(number => number) // orders from biggest to smallest number
-            .TakeLast(5) // should only take 4, 3, 2, 1, 0
-            .Where(number => number % 2 == 0) // should only take 4, 2, 0 (even numbers)
-            .Average(); // should be 2
+            .Select(int.Parse)                       // converts everything to integers
+            .OrderByDescending(number => number)  // orders from biggest to smallest number
+            .TakeLast(5)                             // should only take 4, 3, 2, 1, 0
+            .Where(number => number % 2 == 0)     // should only take 4, 2, 0 (even numbers)
+            .Average();                              // should be 2
         Console.WriteLine($"The magic number is {magicNumber}!");
-        
+
+        #endregion
+
+        #region Lazy Methods Demo
+
         // LINQ methods are "lazy" because they are "iterators"
         // they don't do anything until you start enumerating them
         Console.WriteLine("Press enter to start the lazy example.");
@@ -74,15 +79,20 @@
             .Select(number =>
             {
                 Console.WriteLine($"Transforming {number} to a string");
+                // This doesn't output anything until the .ToArray() is called as it is just a function pointer
                 return number.ToString();
             });
         Console.WriteLine("After the LINQ line for lazyNumbersAsStrings");
 
         // force enumeration
         Console.WriteLine("Before forcing enumeration of lazyNumbersAsStrings.");
-        lazyNumbersAsStrings.ToArray();
+        lazyNumbersAsStrings.ToArray();             // This is what causes the link method to actually execute
         Console.WriteLine("After forcing enumeration of lazyNumbersAsStrings");
-                
+
+        #endregion
+
+        #region Being mindful of Performance
+
         // this also means you need to be careful if your LINQ is expensive
         // and you keep re-evaluating it because you didn't store the result
         // in a variable!
@@ -94,12 +104,18 @@
                 Console.WriteLine($"Transforming {number} to a string");
                 Thread.Sleep(1000);
                 return number.ToString();
-            });
+            })
+            .ToArray(); // This takes a while as it evaluates straight away, 
+        //   but the following 2 foreach loops are super fast
+        // If I omit the .ToArray() from here, then this will be fast
+        //  as it is just creating a function pointer, but then both
+        //  foreach loops following will be slow as they're both executing 
+        //  the expensive query.
 
         Console.WriteLine("Before first enumeration of expensive operation...");
         foreach (var numberAsString in expensiveToCalculate)
         {
-            Console.WriteLine(numberAsString);
+            Console.WriteLine(numberAsString); // These are super fast 
         }
         Console.WriteLine("After first enumeration of expensive operation...");
 
@@ -109,15 +125,24 @@
             Console.WriteLine(numberAsString);
         }
         Console.WriteLine("After second enumeration of expensive operation...");
-        
+
+        #endregion
+
+        #region Creating our own LINQ methods
+
         // we can make our own LINQ methods!
         var myLinqResult = numbers
-            .NicksFancyLinqMethod(number => number * 2);
+            .NicksFancyLinqMethod(number => number * 2)
+            .ToArray(); // This makes it do the iteration straight away, so you get the full collection
+                        // If we omit this, then it'll only do the iteration in the next foreach loop
 
         foreach (var number in myLinqResult)
         {
             Console.WriteLine(number);
         }
+
+        #endregion
+
     }
 }
 
