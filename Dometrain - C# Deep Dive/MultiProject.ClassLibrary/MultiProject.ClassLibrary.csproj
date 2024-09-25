@@ -7,6 +7,7 @@
   </PropertyGroup>
 
 	<ItemGroup>
+		<!-- This is how we can make our internal scoped items visible to specific projects. Useful for unit testing etc. -->
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
 			<_Parameter1>MultiProject.Console</_Parameter1>
 		</AssemblyAttribute>
