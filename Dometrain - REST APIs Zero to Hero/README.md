@@ -105,3 +105,24 @@
     * Patch fallen out of favour lately due to the complexity of implementing partial updates
     * Easier for client to use `GET`, mutate object, then use `PUT` to save changes
     
+## 5. Implement slug-based retrieval
+
+Slugs are useful when you need to provide a more memorable path to your item instead of requiring IDs (eg: guids) to get them.
+
+* Add `Slug` as a computed property on the `Movie` class
+    ```csharp 
+    public string Slug => GenerateSlug();
+* Generate slug class just does some string manipulation to generate a string like this:: `my-movie-title-2024`
+    * Source generation of Regex makes it faster, eg:
+        ```csharp
+        [GeneratedRegex("[^0-9A-Za-z _-]", RegexOptions.NonBacktracking, 5)]
+        private static partial Regex SlugRegex();
+        ```
+
+* Add to `MovieResponse` class, and add to mapping.
+* Add a try parse to the `GET` controller, and a new repository method to get by Slug, and determine which one to call
+    ```csharp
+    var movie = Guid.TryParse(idOrSlug, out var id)
+        ? await _movieRepository.GetByIdAsync(id)
+        : await _movieRepository.GetBySlugAsync(idOrSlug);
+    ```
