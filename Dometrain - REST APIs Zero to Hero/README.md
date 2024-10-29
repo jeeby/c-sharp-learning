@@ -50,7 +50,7 @@
         ```
 * Don't reuse classes across contracts, because you may need to change them for some, and once you've published them you can't change them or it will break the contract
 
-## 3. Create Database
+## 3. Create in-memory database
 * For this example, we're creating an in-memory representation of a DB. This could be any type of DB really.
 * Repository folder to store the repositories (data access code)
     * Class and interface for each one (eg: `MovieRepository` and `IMovieRepository`)
@@ -125,4 +125,34 @@ Slugs are useful when you need to provide a more memorable path to your item ins
     var movie = Guid.TryParse(idOrSlug, out var id)
         ? await _movieRepository.GetByIdAsync(id)
         : await _movieRepository.GetBySlugAsync(idOrSlug);
+    ```
+## 6. Moving to a real database
+
+We are going to setup Postgres in a docker container in order to use as database storage.
+
+We could have used Entity Framework, however that would negate the need for a repository layer, 
+which we still want for the purposes of these lessons. So we are going to use Dapper instead.
+
+### Create Docker database
+
+* Create the `docker-compose.yml` file in `Movies.Api` project.
+* Navigate to folder with docker compose file, and in terminal run `docker compose up`.
+* When running, connect to DB via IDE, using credentials in docker compose file.
+
+### Add database infrastructure code
+
+* Create `DbConnectionFactory.cs` in `Movies.Application` project
+  * Implements `IDbConnectionFactory`
+  * Receive connectionString in constructor
+  * Create a `CreateConnectionAsync()` function that returns the connection
+  * Create extension method to register connection factory in `ApplicationServicesCollectionExtensions.cs`
+  * Register in `Movies.API/Program.cs` 
+    * Also add Database connectionString to `appsettings.json` and retrieve from there
+* Create `DbInitializer.cs` file in `Movies.Application` project
+  * Add some database initialization code in here
+  * Add to extension method to register initializer in `ApplicationServiceCollectionExtensions.cs`
+  * Register in `Movies.API/Program.cs`, at the end after Controllers are mapped
+    ```csharp
+    var dbInitializer = app.Services.GetRequiredService<DbInitializer>();
+    await dbInitializer.InitializeAsync();
     ```
