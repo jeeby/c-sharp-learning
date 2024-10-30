@@ -1,15 +1,17 @@
 using Microsoft.Extensions.DependencyInjection;
 using Movies.Application.Database;
 using Movies.Application.Repositories;
+using Movies.Application.Services;
 
 namespace Movies.Application;
 
 public static class ApplicationServiceCollectionExtensions
 {
+    // Register the services for the application
     public static IServiceCollection  AddApplication(this IServiceCollection services)  
     {
-        // This is just abstractions of dependencies, not the actual implementation
         services.AddSingleton<IMovieRepository, MovieRepository>();
+        services.AddSingleton<IMovieService, MovieService>();
         return services;
     }
 

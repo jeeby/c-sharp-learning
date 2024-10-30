@@ -174,3 +174,20 @@ which we still want for the purposes of these lessons. So we are going to use Da
       ```
     * Commit transaction: `transaction.Commit();` where created
     * Return bool result: `return result > 0;`
+
+### Adding a business logic layer
+
+We don't want the controller talking directly to the repository. Therefore, we are  going to need business logic to live somewhere
+    
+* Not in repository as that should only be for database interactivity
+* Shouldn't be in controller because then business logic is coupled to API
+* Having a service layer allows other applications to interact with our system
+
+#### Create the service layer
+
+* Create a business logic layer in a Services folder in the Application
+  * If doing Clean Architecture, we would use Mediator pattern to handle the services
+  * Also could have Dto objects (eg: MovieDto) that get returned by the service, with a mapper in the application layer
+    * Just using application model all the way through for this app for simplicity
+* Forward calls to the repository layer, making chnages as required (eg: update to return Movie object instead of bool)
+* Inject service into Controller instead of Repository
