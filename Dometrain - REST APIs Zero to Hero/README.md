@@ -156,3 +156,21 @@ which we still want for the purposes of these lessons. So we are going to use Da
     var dbInitializer = app.Services.GetRequiredService<DbInitializer>();
     await dbInitializer.InitializeAsync();
     ```
+    
+### Remove old in-memory database
+
+* Just need to change the movie repository implementation
+  * Remove code from all the repository functions
+  * Inject connection factory into `MovieRepository`
+  * For each function:
+    * Make `async`
+    * Add `using var connection = await _dbConnectionFactory.CreateConnectionAsync();`
+    * If updating more than 1 table, add `using var transaction = connection.BeginTransaction();`
+    * Execute DB query, eg:
+      ```csharp
+      var result = await connection.ExecuteAsync(new CommandDefinition($"""
+                        delete from movies where id = @id
+                        """, new { id }));
+      ```
+    * Commit transaction: `transaction.Commit();` where created
+    * Return bool result: `return result > 0;`
