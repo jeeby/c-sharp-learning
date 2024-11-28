@@ -191,3 +191,29 @@ We don't want the controller talking directly to the repository. Therefore, we a
     * Just using application model all the way through for this app for simplicity
 * Forward calls to the repository layer, making chnages as required (eg: update to return Movie object instead of bool)
 * Inject service into Controller instead of Repository
+
+### Implementing validation
+
+We could implement validation directly in the service layer, but this will bloat the code and make it hard to maintain.
+Using FluentValidation gives us a much nicer way to implement validation.
+
+* Install `FluentValidation` Nuget package
+* Install `FluentValidation.DependencyInjectionExtensions` package too
+  * Provides extensions to register validators automatically
+* Create a `Validators` folder in the `Movies.Application` project 
+  * Add a `MovieValidator` class
+    * Add all validators in the constructor
+  * Register the class dynamically using `services.AddValidatorsFromAssemblyContaining`
+    * Can use any class or something from within the project/ assembly
+    * Good practice to create and use an Assembly Marker, eg: `IApplicationMarker.cs`
+    ```csharp
+    services.AddValidatorsFromAssemblyContaining<IApplicationMarker>(ServiceLifetime.Singleton);
+    ```
+    * Pass Singleton ServiceLifetime value as we're injecting into a Singleton
+* Inject validator into `MovieService`, and setup functions to validate and throw exceptions:
+  ```csharp
+  await _movieValidator.ValidateAndThrowAsync(movie);
+  ```
+  * Then need to map the exceptions in the API layer, in new class: `ValidationMappingMiddleware`
+    * 
+    
